@@ -1,13 +1,14 @@
-import { useState } from "react";
-import { StyleSheet, Text, View, TextInput } from "react-native";
+import { StyleSheet, Text, View, TextInput, Button } from "react-native";
+import CircleBtn from "./CircleBtn";
+import theme from "../style"
 
-export default function FractionList() {
+export default function FractionList(props) {
   return (
     <>
       <View style={styles.container}>
         <SelectBox></SelectBox>
         <TextBox></TextBox>
-        <OptionBox></OptionBox>
+        <OptionBox deleteTask={props.deleteTask} id={props.id}></OptionBox>
       </View>
     </>
   );
@@ -17,35 +18,59 @@ function SelectBox() {
   return <View style={styles.SelectBox}></View>;
 }
 function TextBox() {
-  return <TextInput style={styles.textInput}></TextInput>;
+  return <TextInput style={styles.textInput} placeholder="Novo Item"></TextInput>;
 }
-function OptionBox() {
-    return <View style={styles.OptionBox}></View>;
+
+function OptionBox(props) {
+  const DataButtons = {
+    deleteTask: {
+      title: "Remove",
+      func: sendDeletedTask,
+      image: "minus",
+      backgroundColor: theme.negative.firstColor,
+    },
+  };
+  function sendDeletedTask() {
+    props.deleteTask(props.id);
   }
+  return (
+    <View style={styles.OptionBox}>
+      <CircleBtn
+        data={DataButtons.deleteTask}
+        key={props.id}
+        id={props.id}
+        type="Type3"
+
+      />
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
-    padding: '1%',
+    padding: "1%",
     width: "100%",
     flexDirection: "row",
-    gap:'2.5%',
-    height:40,
-    
+    gap: 20,
+    height: 50,
   },
   SelectBox: {
-    width: "5%",
-    backgroundColor: "#253f4b",
-
+    margin: 5,
+    width: "10%",
+    backgroundColor: theme.main.firstColor,
   },
   OptionBox: {
-    width: "20%",
-    borderColor: '#000000',
-    borderWidth: 1,
+    margin: 5,
+    width: "10%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   textInput: {
-    backgroundColor:'#c8dfea',
-    width:'75%',
-    fontSize:15,
-
+    width: "75%",
+    fontSize: 20,
+    paddingLeft: 10,
+    borderBottomColor: "#000000",
+    borderBottomWidth: 1,
+    color: theme.main.thirdColor,
   },
 });

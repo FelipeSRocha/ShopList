@@ -1,32 +1,59 @@
-import { useState } from "react";
 import { StyleSheet, View, TextInput, Button } from "react-native";
+import CircleBtn from "./CircleBtn";
+import theme from "../style"
 
 export default function TitleList(props) {
   return (
     <>
       <View style={styles.container}>
         <TextBox></TextBox>
-        <OptionBox addNewTask={props.addNewTask} id={props.id}></OptionBox>
+        <OptionBox
+          addNewTask={props.addNewTask}
+          deleteList={props.deleteList}
+          id={props.id}
+        ></OptionBox>
       </View>
     </>
   );
 }
-function sendnewTask(props){
-    console.log("teste")
-    props.addNewTask(props.id)
-}
 
 function TextBox() {
-  return <TextInput style={styles.textInput}></TextInput>;
+  return <TextInput style={styles.textInput} placeholder="Categoria"></TextInput>;
 }
 function OptionBox(props) {
+  const DataButtons = {
+    AddTask: {
+      title: "Add Task",
+      func: sendnewTask,
+      image: "plus",
+      backgroundColor: "#5AF865",
+    },
+    DelList: {
+        title: "Delete Lisk",
+        func: sendDeletedList,
+        image: "minus",
+        backgroundColor: theme.negative.firstColor,
+      },
+  };
+  function sendnewTask() {
+    props.addNewTask(props.id);
+  }
+  function sendDeletedList() {
+    props.deleteList(props.id);
+  }
   return (
     <View style={styles.OptionBox}>
-      <Button
-        onPress={()=>{sendnewTask(props)}}
-        key={props.id}
+      <CircleBtn
+        data={DataButtons.AddTask}
+        key={props.id + "addTask"}
         id={props.id}
-        title="Add"
+        type="Type2"
+      />
+      <CircleBtn
+        data={DataButtons.DelList}
+        key={props.id + "delList"}
+        id={props.id}
+        type="Type2"
       />
     </View>
   );
@@ -34,26 +61,32 @@ function OptionBox(props) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: "1%",
+    paddingBottom: 5,
     marginBottom: 5,
     width: "100%",
     flexDirection: "row",
     gap: "2.5%",
     height: 50,
-    borderBottomColor: "#000000",
-    borderBottomWidth: 1,
+    borderBottomColor: "#742DC6",
+    borderBottomWidth: 3,
   },
   button: {
     color: "#253f4b",
+    flex: 1,
   },
   textInput: {
-    backgroundColor: "#c8dfea",
-    width: "80%",
-    fontSize: 25,
+    width: "70%",
+    fontSize: 35,
+    paddingLeft: 15,
+    color:theme.main.thirdColor
   },
   OptionBox: {
-    width: "20%",
-    borderColor: "#000000",
-    borderWidth: 1,
+    width: "40%",
+    padding: 5,
+    gap: 5,
+    flexDirection: "row",
+    flex: 2,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

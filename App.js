@@ -1,11 +1,14 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Button, ScrollView } from "react-native";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { useState } from "react";
 import SectionList from "./components/SectionList";
+import CircleBtn from "./components/CircleBtn";
+import theme from "./style";
 
 export default function App() {
   const [dataList, setdataList] = useState({});
   const [listNumber, setListNumber] = useState(1);
+  const [stateMode, setStateMode] = useState("none");
 
   const addNewList = function () {
     const copyDataList = { ...dataList };
@@ -16,112 +19,145 @@ export default function App() {
       TaskNumber: 1,
     };
     setdataList(copyDataList);
+    setStateMode("shop");
   };
 
-  function addNewTask(idLista){
+  function addNewTask(idLista) {
     //Nesse metodo, o nome da lista e da tarefa vai aumentando sem parar
-    // const idLista = event.target.id.substr(8);
-    console.log(idLista)
     const copyDataList = { ...dataList };
-    
-
     copyDataList[idLista].TaskNumber = copyDataList[idLista].TaskNumber + 1;
-
     const lengthTaskList = copyDataList[idLista].TaskNumber;
 
     copyDataList[idLista].owntaskList["Tarefa" + lengthTaskList] = {
       name: "Nova Tarefa",
       status: "unchecked",
+      mode: "shop"
     };
     console.log(idLista, "Tarefa" + lengthTaskList);
     setdataList(copyDataList);
-  };
+  }
 
-  const deleteTask = (event) => {
+  function deleteTask(idTaskList) {
     const copyDataList = { ...dataList };
-    const [idLista, idTask] = event.target.id.substr(4).split("-");
+    const [idLista, idTask] = idTaskList.split("-");
     delete copyDataList[idLista].owntaskList[idTask];
 
     setdataList(copyDataList);
-  };
+  }
 
-  const deleteList = (event) => {
+  function deleteList(idLista) {
     const copyDataList = { ...dataList };
-    const idLista = event.target.id.substr(11);
+
     delete copyDataList[idLista];
     setdataList(copyDataList);
+  }
+
+  //   const changeListName = (event) => {
+  //     const copyDataList = { ...dataList };
+  //     const idLista = event.target.id.substr(6);
+  //     const listName = event.target.value;
+  //     copyDataList[idLista].name = listName;
+  //     setdataList(copyDataList);
+  //   };
+
+  //   const changeTaskName = (event) => {
+  //     const copyDataList = { ...dataList };
+  //     const [idLista, idTask] = event.target.id.substr(8).split("-");
+  //     const taskName = event.target.value;
+  //     copyDataList[idLista].owntaskList[idTask] = taskName;
+  //     setdataList(copyDataList);
+  //   };
+  const DataButtons = {
+    AddList: {
+      title: "Nova_lista",
+      func: addNewList,
+      image: "plus",
+      backgroundColor: "#5AF865",
+    },
   };
 
-  const changeListName = (event) => {
-    const copyDataList = { ...dataList };
-    const idLista = event.target.id.substr(6);
-    const listName = event.target.value;
-    copyDataList[idLista].name = listName;
-    setdataList(copyDataList);
-  };
+  function RenderStateMode() {
+    switch (stateMode) {
+      case "none":
+        return <></>;
+      case "shop":
+        return (
+          <>
+            {Object.keys(dataList).map((keys) => (
+              <SectionList
+                data={dataList[keys]}
+                id={keys}
+                key={keys}
+                addNewTask={addNewTask}
+                deleteTask={deleteTask}
+                deleteList={deleteList}
+              />
+            ))}
+          </>
+        );
+    }
+  }
 
-  const changeTaskName = (event) => {
-    const copyDataList = { ...dataList };
-    const [idLista, idTask] = event.target.id.substr(8).split("-");
-    const taskName = event.target.value;
-    copyDataList[idLista].owntaskList[idTask] = taskName;
-    setdataList(copyDataList);
-  };
   return (
     <>
-      <StatusBar style="auto" />
-
-      <View style={styles.header}>
-        <Text> Header</Text>
-      </View>
-      <View style={styles.body}>
-        <Button onPress={addNewList} title="Add"></Button>
-        <ScrollView>
-        {Object.keys(dataList).map((keys) => {
-          return (
-            <SectionList
-              data={dataList[keys]}
-              id={keys}
-              key={keys}
-              addNewTask={addNewTask}
-              deleteTask={deleteTask}
-              deleteList={deleteList}
-              changeTaskName={changeTaskName}
-              changeListName={changeListName}
-            />
-          );
-        })}
-        </ScrollView>
-
-
-      </View>
-      <View style={styles.bottom}>
-        <Text> Bottom</Text>
+      <StatusBar style="auto" barStyle="light-content" />
+      <View style={styles.master}>
+        <View style={styles.header}>
+          <Text> Header</Text>
+        </View>
+        <View style={styles.body}>
+          <ScrollView>
+            <RenderStateMode data={dataList} />
+          </ScrollView>
+        </View>
+        <View style={styles.bottom}>
+          <ScrollView
+            horizontal={true}
+            key="bottom"
+            contentContainerStyle={styles.Container}
+          >
+            {Object.keys(DataButtons).map((key) => {
+              return (
+                <CircleBtn
+                  data={DataButtons[key]}
+                  key={key}
+                  type="Type1"
+                ></CircleBtn>
+              );
+            })}
+          </ScrollView>
+        </View>
       </View>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  master: {
+    flex: 1,
+  },
   header: {
-    backgroundColor: "#253f4b",
+    backgroundColor: theme.main.firstColor,
     height: 40,
     top: 0,
     alignItems: "center",
     justifyContent: "center",
   },
   body: {
+    backgroundColor: theme.main.firstColor,
     flex: 1,
-    backgroundColor: "#537d90",
-    height: '100%',
   },
   bottom: {
-    position: "absolute",
-    backgroundColor: "#253f4b",
-    height: 60,
-    width: "100vw",
+    position: "relative",
+    backgroundColor: theme.main.firstColor,
+    height: 100,
+    width: "100%",
     bottom: 0,
+  },
+
+  Container: {
     alignItems: "center",
     justifyContent: "center",
+    padding: 10,
   },
 });
